@@ -29,10 +29,13 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
+
+import org.firstinspires.ftc.teamcode.driver.KS109I2cDistance;
+
+import java.util.Hashtable;
+import java.util.Map;
 
 /*
  * This is an example LinearOpMode that shows how to use
@@ -45,13 +48,31 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 @TeleOp(name = "Sensor: KS 109", group = "Sensor")
 public class SensorKS109Distance extends LinearOpMode {
 
-  //OpticalDistanceSensor odsSensor;  // Hardware Device Object
+  KS109I2cDistance ks109;  // Hardware Device Object
 
   @Override
   public void runOpMode() {
 
     // get a reference to our Light Sensor object.
   //  odsSensor = hardwareMap.get(OpticalDistanceSensor.class, "sensor_ods");
+
+    ks109 = hardwareMap.get(KS109I2cDistance.class, "ks109");
+
+
+    Hashtable<String, Object> deviceInfo=ks109.getDeviceInfo();
+    for ( Map.Entry<String, Object> entry : deviceInfo.entrySet() ) {
+      telemetry.addData(entry.getKey(), entry.getValue());
+    }
+
+  //  ks109.slowConfig();
+
+    Hashtable<String, Object> settingInfo=ks109.getSettingInfo();
+    for ( Map.Entry<String, Object> entry : settingInfo.entrySet() ) {
+      telemetry.addData(entry.getKey(), entry.getValue());
+    }
+
+
+    telemetry.update();
 
     // wait for the start button to be pressed.
     waitForStart();
@@ -61,8 +82,9 @@ public class SensorKS109Distance extends LinearOpMode {
     while (opModeIsActive()) {
 
       // send the info back to driver station using telemetry function.
-      telemetry.addData("Raw",    0);
-      telemetry.addData("Normal", 0);
+
+
+      telemetry.addData("Distance (mm)",    ks109.getDistance());
 
       telemetry.update();
     }
